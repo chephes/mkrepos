@@ -1,0 +1,15 @@
+#!/bin/bash
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 repository"
+    exit 1
+fi
+
+set -e
+sudo groupadd $1
+dirname=$1.git
+mkdir $dirname
+trap 'groupdel $1;rm -rf $dirname; exit 1;' ERR
+pushd $dirname > /dev/null
+git init --bare --shared=true
+popd > /dev/null
+chgrp -R $1 $dirname
